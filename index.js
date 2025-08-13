@@ -1,24 +1,36 @@
+import "dotenv/config";
 import Groq from "groq-sdk";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { retrieveRelevantDocs } from "./retriever.js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-async function zeroShotPrompting(userQuery) {
-  const response = await groq.chat.completions.create({
-    model: "llama3-70b-8192",
-    messages: [
-      {
-        role: "system",
-        content: "You are a legal AI assistant that provides concise, factual answers with case citations when possible."
-      },
-      { role: "user", content: userQuery }
-    ],
-    temperature: 0.2
-  });
+async function main() {
+    const question = "What are the latest bail rulings?";
 
-  console.log("AI Response:\n", response.choices[0].message.content);
+    // Step 1: Retrieve relevant docs
+    const retrieved = retrieveRelevantDocs(question);
+    const context = retrieved.map(d => `From ${d.file}:\n${d.content}`).join("\n\n");
+
+    // Step 2: Ask Groq with strict grounding
+    const prompt = `
+You are a legal assistant. Use ONLY the provided case documents to answer the question.
+If the answer is not found in the documents, say "I cannot find this information in the provided case files."
+
+Documents:
+${context}
+
+Question:
+${question}
+
+Answer:
+`;
+
+    const chatCompletion = await groq.chat.completions.create({
+        messages: [{ role: "user", content: prompt }],
+        model: "llama3-8b-8192" // or another Groq-supported model
+    });
+
+    console.log("AI Answer:\n", chatCompletion.choices[0].message.content);
 }
 
-zeroShotPrompting("What are the latest Supreme Court rulings on privacy rights in India?");
+main();
