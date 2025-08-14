@@ -1,6 +1,6 @@
 import "dotenv/config";
 import Groq from "groq-sdk";
-import { retrieveRelevantDocs } from "./retriever.js";
+import { retrieveRelevantDocs } from "./rag/retriever.js";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
