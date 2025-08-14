@@ -1,11 +1,18 @@
 import { groq } from "../config/groqConfig.js";
 
-export async function getAIResponse(messages) {
+/**
+ * Get AI response from Groq with user-defined temperature and top_p
+ * @param {Array} messages - Chat messages for the AI
+ * @param {Object} options - Optional parameters from the user
+ * @param {number} options.temperature - Controls creativity (0–1)
+ * @param {number} options.top_p - Controls nucleus sampling (0–1)
+ */
+export async function getAIResponse(messages, { temperature = 0.3, top_p = 0.9 } = {}) {
   return await groq.chat.completions.create({
     model: "llama3-8b-8192",
     messages,
-    temperature: 0.3, // central place to change creativity
-    top_p: 0.9,
+    temperature, // user-provided or default
+    top_p,       // user-provided or default
     max_tokens: 500
   });
 }
