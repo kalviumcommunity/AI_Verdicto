@@ -1,4 +1,5 @@
 import readline from "readline";
+dotenv.config({ path: '../.env' }); 
 import Groq from "groq-sdk";
 import dotenv from "dotenv";
 

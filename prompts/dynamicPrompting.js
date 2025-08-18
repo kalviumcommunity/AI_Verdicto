@@ -1,7 +1,9 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ path: '../../.env' }); 
 import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
 
 // Example variables that will change
 const userQuery = "What are the latest Supreme Court rulings on environmental protection?";

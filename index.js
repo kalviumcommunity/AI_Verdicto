@@ -1,6 +1,11 @@
-import "dotenv/config";
+// import dotenv from "dotenv";
+// dotenv.config({ path: '../../.env' }); 
 import Groq from "groq-sdk";
 import { retrieveRelevantDocs } from "./rag/retriever.js";
+import { logTokens } from "./utils/logTokens.js";
+import dotenv from "dotenv";
+dotenv.config();
+
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -29,6 +34,8 @@ Answer:
         messages: [{ role: "user", content: prompt }],
         model: "llama3-8b-8192" // or another Groq-supported model
     });
+    // ...after your AI call...
+    logTokens(chatCompletion.usage);
 
     console.log("AI Answer:\n", chatCompletion.choices[0].message.content);
 }
