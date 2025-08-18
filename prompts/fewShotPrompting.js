@@ -1,7 +1,7 @@
 import Groq from "groq-sdk";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ path: '../../.env' }); // load from ../../.env
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -49,6 +49,17 @@ async function runFewShotPrompting(areaOfLaw, location, userQuery) {
 }
 
 // CLI usage: node fewShotPrompting.js "Criminal Law" "India" "Summarize latest bail rulings"
-const [,, areaOfLaw, location, ...queryParts] = process.argv;
+const [,, areaOfLawArg, locationArg, ...queryParts] = process.argv;
+
+const areaOfLaw = areaOfLawArg || "Criminal Law";
+const location = locationArg || "India";
+
+// ensure query is provided
+if (queryParts.length === 0) {
+  console.error("❌ Please provide a user query, e.g.:\n node fewShotPrompting.js \"Criminal Law\" \"India\" \"Summarize latest bail rulings\"");
+  process.exit(1);
+}
+
 const userQuery = queryParts.join(" ");
+
 runFewShotPrompting(areaOfLaw, location, userQuery);
